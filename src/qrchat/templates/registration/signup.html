@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class = "ftco-section">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center mb-5">
+            <a href="{% url 'accounts:custom_login' %}"><h2 class="heading-section" style="font-weight: bold; font-size: 40px">QrChat</h2></a>
+            <h2 class="heading-section">Sign up</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color:white">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="login-wrap p-0">
+                <form action="#" method="POST" class="signup-form" novalidate>
+                    {% load widget_tweaks %}
+                    {% csrf_token %}
+                    {% for field in form %}
+                    {% if field.label == "ログインID" %}
+                    <label for="login_id">{{ field.label }}</label>
+                    <div class="form-group">
+                        {% if field.errors %}
+                            {% render_field field class="form-control is-invalid" id="login_id" placeholder="ログインIDを入力" %}
+                            <div class="invalid-feedback">{{field.errors}}</div>
+                        {% else %}
+                            {% render_field field class="form-control" id="login_id" placeholder="ログインIDを入力" %}
+                        {% endif %}
+                    </div>
+                    {% elif field.label == "パスワード" %}
+                    <label for="password1">{{ field.label }}</label>
+                    <div class="form-group">
+                        {% if field.errors %}
+                            {% render_field field class="form-control is-invalid" id="password1" placeholder="パスワードを入力" %}
+                            <div class="invalid-feedback">{{field.errors}}</div>
+                        {% else %}
+                            {% render_field field class="form-control" id="password1" placeholder="パスワードを入力" %}
+                        {% endif %}
+                    </div>
+                    {% elif field.label == "パスワード(確認用)" %}
+                    <label for="password2">{{ field.label }}</label>
+                    <div class="form-group">
+                        {% if field.errors %}
+                            {% render_field field class="form-control is-invalid" id="password2" placeholder="パスワードを再入力" %}
+                            <div class="invalid-feedback">{{field.errors}}</div>
+                        {% else %}
+                            {% render_field field class="form-control" id="password2" placeholder="パスワードを再入力" %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    {% if error %}
+                    <div class="alert alert-warning text-center" role="alert">
+                        <p>{{ error | linebreaksbr}}</p>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <div class="form-group">
+                        <button type="submit" class="form-control btn btn-primary submit px-5">新規登録</button>
+                    </div>
+                    <div class="form-group d-md-flex">
+                        <div class="w-50">
+                            <div class="w-100 text-md-right">
+                                <a href="{% url 'accounts:custom_login' %}" class="text-info">ログイン画面へ戻る</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

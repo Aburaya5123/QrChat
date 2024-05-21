@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class = "ftco-section">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center mb-5">
+            <a href="{% url 'accounts:custom_login' %}"><h2 class="heading-section" style="font-weight: bold; font-size: 40px">QrChat</h2></a>
+            <h2 class="heading-section">RoomSettings</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color:white">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="login-wrap p-0">
+                <form action="#" method="POST" class="signin-form" novalidate>
+                    {% load widget_tweaks %}
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {% if field.label == "ルーム名" %}
+                        <label for="room">{{ field.label }}</label>
+                        <div class="form-group">
+                        {% if field.errors %}
+                        {% render_field field class="form-control is-invalid" id="room" placeholder="ルーム名を入力" %}
+                        <div class="invalid-feedback">{{field.errors}}</div>
+                        {% else %}
+                        {% render_field field class="form-control" id="room" placeholder="ルーム名を入力" %}
+                        {% endif %}
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    {% if error %}
+                    <div class="alert alert-warning text-center" role="alert">
+                        <p>{{ error | linebreaksbr}}</p>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <div class="form-group">
+                        <button type="submit" class="form-control btn btn-primary submit px-3">ルーム作成</button>
+                    </div>
+                </form>
+                <div class="form-group d-md-flex">
+                    <div class="w-60 text-md-right">
+                        <form action='{% url "accounts:custom_logout" %}' method='GET' name='logout'>
+                            <button type="submit" class="btn submit px-3" style="color:white">ログアウト</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

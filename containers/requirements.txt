@@ -1,0 +1,12 @@
+Django==5.0.4
+django-widgets-improved==1.5.0
+django-bootstrap5==24.1
+channels==4.1.0
+daphne==4.1.2
+channels-redis==4.2.0
+asgiref==3.8.1
+django-redis==5.4.0
+redis==5.0.4
+celery==5.4.0
+apscheduler==3.10.4
+flower==2.0.1

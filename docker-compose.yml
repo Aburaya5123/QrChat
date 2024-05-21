@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+
+  django:
+    container_name: django
+
+    build:
+      context: ./containers
+      dockerfile: Dockerfile
+      args:
+        DEBUG: ${DEBUG}
+        SECRET_KEY: ${SECRET_KEY}
+
+    ports:
+      - "8000:8000"
+    
+    tty: true
+
+    volumes:
+      - ${SRC_PATH}:/root/workspace
+    
+    command: bash -c "cd qrchat && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+    depends_on:
+      - redis
+  
+
+  celery:
+    container_name: celery
+
+    build:
+      context: ./containers
+
+    tty: true
+
+    volumes:
+      - ${SRC_PATH}:/root/workspace
+
+    command: bash -c "cd qrchat && celery -A qrchat worker -l info"
+
+    depends_on:
+      - django
+      - redis
+
+
+  redis:
+      image: redis:latest
+
+      restart: always
+
+      tty: true
+
+      ports:
+        - 6379:6379
+
+
+  monitor:
+      container_name: monitor
+
+      build:
+        context: ./containers
+
+      tty: true
+
+      volumes:
+        - ${SRC_PATH}:/root/workspace
+
+      ports:
+        - 5555:5555
+
+      command: bash -c "cd qrchat && celery -A qrchat flower --port=5555"
+
+      depends_on:
+        - django
+        - redis
