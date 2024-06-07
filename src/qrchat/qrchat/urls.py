@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('chat/', include('chat.urls')),
-    re_path(r'.*', RedirectView.as_view(url='/accounts/login/')),
-]
+    #re_path(r'.*', RedirectView.as_view(url='/accounts/login/')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

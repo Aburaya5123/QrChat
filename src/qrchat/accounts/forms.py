@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 from django import forms
 
 from .models import CustomUser
@@ -21,7 +20,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-
+        # Errorメッセージの上書き
         self.fields['login_id'].error_messages.update({
             'required': _('ログインIDを入力してください。'),
             'unique':_('このログインIDは既に使用されています。'),
@@ -63,7 +62,7 @@ class CustomUserLoginFrom(AuthenticationForm):
     def __init__(self, request=None, **kwargs):
         super(CustomUserLoginFrom, self).__init__(request, **kwargs)
         self.username_field = 'login_id' 
-
+        # Errorメッセージの上書き
         self.fields['username'].error_messages.update({
             'required': _('ログインIDを入力してください。'),
             'invalid': _('ログインIDに使用できない文字が含まれています。'),

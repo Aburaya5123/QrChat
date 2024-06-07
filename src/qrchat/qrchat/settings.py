@@ -15,6 +15,9 @@ import os
 from django.urls import reverse_lazy
 
 
+CURRENT_DOMAIN_URL = "https://localhost:8000"
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,6 +59,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_bootstrap5',
     'channels',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 
@@ -155,15 +159,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-"""
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-"""
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -189,6 +184,10 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'chat/assets'),
 )
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -205,11 +204,11 @@ LOGOUT_REDIRECT_URL = reverse_lazy('accounts:custom_login')
 
 # Session
 
-SESSION_COOKIE_AGE = 300
+SESSION_COOKIE_AGE = 1800
 
 SESSION_SAVE_EVERY_REQUEST = True
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 

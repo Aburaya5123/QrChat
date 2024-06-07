@@ -1,75 +1,88 @@
-<!--  * Login Form V20 © 2022 by Colorlib / Rok Krivec is licensed under CC BY 4.0 -->
-
 {% extends 'base.html' %}
 
 {% block content %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/chat_box.css' %}">
-<section class = "ftco-section">
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center mb-5">
-            <a href="{% url 'accounts:custom_login' %}"><h2 class="heading-section" style="font-weight: bold; font-size: 40px">QrChat</h2></a>
-            <h3 class="row justify-content-center" style="color:white">ルーム名: {{ room_name|safe }}</h4>
-        </div>
+<div class=”bgBox”><link rel=”preconnect” href=”https://fonts.googleapis.com”>
+    <link rel=”preconnect” href=”https://fonts.gstatic.com” crossorigin>
+    <link href=”https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap” rel=”stylesheet”></div>
+<div class="col-md-6 text-center">
+    <div class=" chat-header">
+            <a href="{% url 'accounts:custom_login' %}" style="margin-right: 20px;"><h2 class="site-title">QrChat</h2></a>
+            <div>
+                <h6>ルーム名: {{ room_name|safe }}</h6>
+                <h6 id="member-counter">参加者 1名</h6>
+            </div>    
     </div>
-    <div class="row">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color:white">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        <div class="col-md-8 offset-md-1 col-lg-9 offset-lg-1 col-xl-9 offset-xl-1">
-            <ul class="list-unstyled text-white">
-                <li class="d-flex justify-content-between mb-4">
-                    <img src="{% static 'icons/cat_image.jpg' %}" alt="avatar"
-                        class="rounded-circle d-flex align-self-start me-3 shadow-1-strong" width="60">
-                    <div class="card mask-custom">
-                        <div class="card-header d-flex justify-content-between p-3"
-                            style="border-bottom: 1px solid rgba(255,255,255,.3);">
-                            <p class="fw-bold mb-0">チャット送信者</p>
-                            <p class="text-light small mb-0"><i class="far fa-clock"></i> 12 mins ago</p>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-0">
-                                チャット
-                            </p>
-                        </div>
-                    </div>
-                </li>
-                <li class="d-flex justify-content-between mb-4">
-                    <div class="card mask-custom w-100">
-                        <div class="card-header d-flex justify-content-between p-3"
-                            style="border-bottom: 1px solid rgba(255,255,255,.3);">
-                            <p class="fw-bold mb-0">チャット送信者（自身）</p>
-                            <p class="text-light small mb-0"><i class="far fa-clock"></i> 13 mins ago</p>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-0">
-                                チャット（自身）
-                            </p>
-                        </div>
-                    </div>
-                    <img src="{% static 'icons/cat_image.jpg' %}" alt="avatar"
-                        class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
-                </li>
-                <li class="mb-3">
-                    <div data-mdb-input-init class="form-outline form-white">
-                        <textarea class="form-control" id="textAreaExample3" rows="4"></textarea>
-                    </div>
-                </li>
-                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-light btn-lg btn-rounded float-end">送信</button>
-                <div class="form-group d-md-flex">
-                    <div class="w-60 text-md-right">
-                        <form action='{% url "accounts:custom_logout" %}' method='GET' name='logout'>
-                            <button type="submit" class="btn submit px-3" style="color:white">ログアウト</button>
-                        </form>
-                    </div>
+</div>
+<div class="row justify-content-center">
+    {% if messages %}
+    <ul role="alert">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="col-md-8 col-lg-9 col-xl-9">
+        <ul class="list-unstyled">
+            <li class="mb-3">
+                    <div class="chat-message-holder mb-3" id="chat-message-holder"></div>
+                <div class="form-outline form-white">
+                    <textarea class="form-control" id="chat-text-area" rows="4" style="resize: none;"></textarea>
                 </div>
-            </ul>
-        </div>
-
+            </li>
+            <div class="form-group d-flex justify-content-between">
+                <form action='{% url "accounts:custom_logout" %}' method='GET' name='logout'>
+                    <button type="submit" class="btn submit">ログアウト</button>
+                </form>
+                <div class="d-flex align-items-center">
+                    <div id="online-status" class="online-status">
+                        <span class="status-indicator" id="status-indicator"></span>
+                        <span id="status-text">オンライン</span>
+                    </div>
+                    <button type="submit" id="send-chat-text" class="btn btn-light btn-lg btn-rounded float-end">送信</button>
+                </div>
+            </div>
+        </ul>
     </div>
-</section>
+</div>
+<template id="chat-template1">
+    <li class="d-flex justify-content-between">
+        <div class="icon-container" id="chat-message-icon-container1">
+            <span class="user-icon-custom" id="chat-message-icon1">{{ chat_icon }}</span>
+        </div>
+        <div class="card card-custom">
+            <div class="card-header card-header-custom">
+                <p class="mb-0" id="chat-message-sender1">{{ chat_sender }}</p>
+                <div class="chat-time-stamp mb-0">
+                    <i class="far fa-clock"></i>
+                    <p class="text-light mb-0" id="chat-message-date1">{{ chat_date }}</p>
+                </div>
+            </div>
+            <div class="card-body card-body-custom">
+                <p class="mb-0" id="chat-message-body1">{{ chat_body }}</p>
+            </div>
+        </div>
+    </li>
+</template>
+<template id="chat-template2">
+    <li class="d-flex justify-content-between">
+        <div class="card card-custom">
+            <div class="card-header card-header-custom">
+                <p class="mb-0" id="chat-message-sender2">{{ chat_sender }}</p>
+                <div class="chat-time-stamp mb-0">
+                    <i class="far fa-clock"></i>
+                    <p class="text-light mb-0" id="chat-message-date2">{{ chat_date }}</p>
+                </div>
+            </div>
+            <div class="card-body card-body-custom">
+                <p class="mb-0" id="chat-message-body2">{{ chat_body }}</p>
+            </div>
+        </div>
+        <div class="icon-container" id="chat-message-icon-container2">
+            <span class="user-icon-custom" id="chat-message-icon2">{{ chat_icon }}</span>
+        </div>
+    </li>
+</template>
+{{ user.username | json_script:"user-data"}}
+<script type="text/javascript" src="{% static 'js/websocket_behaviour.js' %}"></script>
 {% endblock content %}

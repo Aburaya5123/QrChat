@@ -9,8 +9,7 @@ from qrchat.utils.model_helper import find_room_object, str_to_uuid
 logger = getLogger(__name__)
 
 
-class AccessControlMiddleware:
-
+class PathPattern:
     # url一覧
     path_pattern = {'root':'/', 
                     'accounts':'/accounts/', 
@@ -23,10 +22,15 @@ class AccessControlMiddleware:
                     'room-settings':'/accounts/room-settings/', 
                     'chatroom':'/chat/room/', 
                     'lobby':'/chat/lobby/',
-                    'favicon':'/favicon.ico/' }
+                    'favicon':'/favicon.ico/',
+                    'media':'/media/' }
+
+
+class AccessControlMiddleware:
 
     def __init__(self, get_response):
         self.get_response = get_response
+        self.path_pattern = PathPattern.path_pattern
 
     def __call__(self, request):
 
@@ -37,8 +41,7 @@ class AccessControlMiddleware:
         self.username = request.user.username if self.is_authenticated else None
         self.joined_room = request.user.joined_room if self.is_authenticated else None
 
-        print(f"【MiddleWare】Auth:{self.is_authenticated}/U_ID:{request.user}/PATH{request.path}\
-              /UNAME{self.username}")
+        #print(f"【MiddleWare】Auth:{self.is_authenticated}/U_ID:{request.user}/PATH:{request.path}")
 
         if not destination.endswith('/'):
             destination += '/'
@@ -51,6 +54,10 @@ class AccessControlMiddleware:
         # アイコン取得
         elif destination.startswith(self.path_pattern['favicon']):
             return redirect('/static/icons/favicon.ico')
+        
+        # メディアへのアクセス
+        elif destination.startswith(self.path_pattern['media']):
+            return self.get_response(request)
 
         # ログイン画面
         elif destination.startswith(self.path_pattern['login']):
@@ -116,7 +123,7 @@ class AccessControlMiddleware:
         if self.is_authenticated:
             # ゲストはこの画面へアクセスできないので、ロビーへリダイレクト
             if self.is_guest and find_room_object(False, room_id=self.joined_room):
-                return redirect(self.path_pattern['lobby'] + self.joined_room + '/')
+                return redirect(self.path_pattern['lobby'] + str(self.joined_room) + '/')
             # 部屋が見つからない場合
             elif self.is_guest:
                 messages.error(request, 'ルームが見つかりません。')

@@ -1,3 +1,5 @@
+from typing import Any
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import login
 from django.contrib import messages
@@ -23,8 +25,8 @@ class ChatLobby(FormView):
         kwargs['user'] = self.request.user
         return kwargs
 
-    # URLからroom_idを取得
     def get(self, request, room_id):
+        # URLからroom_idを取得
         self.room_uuid = str_to_uuid(str(room_id))
         if self.room_uuid is None:
             messages.error(self.request, '無効なURLです。')
@@ -39,13 +41,16 @@ class ChatLobby(FormView):
         # room_idをhidden formに入力
         initial_dict = dict(room_uuid=self.room_uuid)
         # ゲスト以外は、前回使用したユーザー名があればusername formに出力
-        if request.user.is_authenticated and not request.user.is_guest and request.user.username is not None:
+        if request.user.is_authenticated and \
+            not request.user.is_guest and \
+                request.user.username is not None:
             initial_dict['room_username']=request.user.username
-            
+
         m_form = RoomUsernameForm(request.GET or None, initial=initial_dict)
         context = {
             'room_name':room_name,
             'form':m_form,
+            'room_qrcode':room_object.first().qrcode.url
         }
         return render(request, self.template_name, context)
     
@@ -69,3 +74,21 @@ class ChatLobby(FormView):
                 update_customuser_model({'username':username}, u_instance=self.request.user)
 
         return redirect(f"/chat/room/{str(room_uuid)}/")
+    
+    # 以降、FormValidationError時に、contextを追加する処理
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        room_uuid = request.POST.get('room_uuid')
+        if type(str_to_uuid(room_uuid)) is UUID:
+            self.room_uuid = room_uuid
+        else:
+            messages.error(request, '無効なルームIDです。')
+            return redirect('accounts:custom_login')
+        return super(ChatLobby, self).post(request, *args, **kwargs)
+    
+    def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> HttpResponse:
+        if self.room_uuid is not None:
+            room_object = find_room_object(True, room_id=self.room_uuid)
+            if room_object is not None:
+                context['room_qrcode'] = room_object.first().qrcode.url
+                context['room_name'] = room_object.first().room
+        return super().render_to_response(context, **response_kwargs)

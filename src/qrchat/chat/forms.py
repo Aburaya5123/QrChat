@@ -46,11 +46,14 @@ class RoomUsernameForm(forms.Form):
         super(RoomUsernameForm, self).__init__(*args, **kwargs)
     
     def clean(self):
+        super(RoomUsernameForm, self).clean()
         username = self.cleaned_data.get('room_username')
         room_uuid = self.cleaned_data.get('room_uuid')
         if type(room_uuid) is not UUID:
             raise forms.ValidationError('ルームの取得に失敗しました。')
-        
+        elif username is None or username == "":
+            raise forms.ValidationError('')
+
         # usernameの重複確認
         duplicate_uname = find_customuser_object(True, username=username, joined_room=room_uuid)
 
@@ -60,5 +63,4 @@ class RoomUsernameForm(forms.Form):
         else:
             if duplicate_uname is not None:
                 raise forms.ValidationError('既に使用されているユーザー名です。')
-        
         return self.cleaned_data

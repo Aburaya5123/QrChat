@@ -1,22 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class = "ftco-section">
+<section class = "content-section">
     <div class="row justify-content-center">
         <div class="col-md-6 text-center mb-5">
-            <a href="{% url 'accounts:custom_login' %}"><h2 class="heading-section" style="font-weight: bold; font-size: 40px">QrChat</h2></a>
-            <h2 class="heading-section">Sign up</h2>
+            <a href="{% url 'accounts:custom_login' %}" class="site-title">QrChat</a>
+            <h2 class="site-sub-title">Sign up</h2>
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color:white">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+        <div class="col-md-6 col-lg-5 col-xl-4">
             <div class="login-wrap p-0">
                 <form action="#" method="POST" class="signup-form" novalidate>
                     {% load widget_tweaks %}
@@ -56,21 +49,20 @@
                     {% endfor %}
                     {% for error in form.non_field_errors %}
                     {% if error %}
-                    <div class="alert alert-warning text-center" role="alert">
-                        <p>{{ error | linebreaksbr}}</p>
-                    </div>
+                    <p class="error" role="alert">{{ error | linebreaksbr}}</p>
                     {% endif %}
                     {% endfor %}
+                    {% if messages %}
+                    <ul role="alert">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                     <div class="form-group">
-                        <button type="submit" class="form-control btn btn-primary submit px-5">新規登録</button>
+                        <button type="submit" class="form-control btn btn-primary submit">新規登録</button>
                     </div>
-                    <div class="form-group d-md-flex">
-                        <div class="w-50">
-                            <div class="w-100 text-md-right">
-                                <a href="{% url 'accounts:custom_login' %}" class="text-info">ログイン画面へ戻る</a>
-                            </div>
-                        </div>
-                    </div>
+                    <a href="{% url 'accounts:custom_login' %}">ログイン画面へ戻る</a>
                 </form>
             </div>
         </div>

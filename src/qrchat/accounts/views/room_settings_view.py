@@ -16,16 +16,17 @@ class RoomSettingsView(LoginRequiredMixin, FormView):
     form_class = RoomSettingsForm
     template_name = 'registration/roomsettings.html'
 
-    # formに引数を追加
+    # formからuserを参照するため、引数を追加
     def get_form_kwargs(self):
         kwargs = super(RoomSettingsView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
-    # 既にルームが存在する場合は、formに挿入
+    # formに初期値を挿入
     def get(self, request):
         old_room = find_room_object(True, owner=request.user.user_id)
         if old_room is not None:
+            # 前回に使用したルーム名を入力
             initial_dict = dict(room=old_room.first().room)
             m_form = RoomSettingsForm(request.GET or None, initial=initial_dict)
         else:
@@ -38,11 +39,15 @@ class RoomSettingsView(LoginRequiredMixin, FormView):
         room_name = form.cleaned_data.get('room')
 
         old_room = find_room_object(True, owner=self.request.user.user_id)
-        # ルームの引継ぎ
+        # ルームの引継ぎを行う
         if old_room is not None and old_room.first().room == room_name:
+            # 有効期限を再設定
+            old_room.first().set_expire_date()
+            old_room.first().save()
             return redirect(f"/chat/lobby/{old_room.first().room_id}/")
                
-        # ルームの新規作成を行い古いルームは削除 -> accounts.signals.pyのリスナーでdeleteをキャッチ
+        # ルームの新規作成を行い古いルームは削除 
+        #   -> accounts.signals.pyのリスナーでdeleteをキャッチ
         elif old_room is not None:
             old_room.delete()
 

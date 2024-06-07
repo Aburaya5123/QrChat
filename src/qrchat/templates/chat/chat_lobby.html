@@ -1,23 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class = "ftco-section">
+<section class = "content-section">
     <div class="row justify-content-center">
         <div class="col-md-6 text-center mb-5">
-            <a href="{% url 'accounts:custom_login' %}"><h2 class="heading-section" style="font-weight: bold; font-size: 40px">QrChat</h2></a>
-            <h2 class="heading-section">Lobby</h2>
+            <a href="{% url 'accounts:custom_login' %}" class="site-title">QrChat</a>
+            <h2 class="site-sub-title">Lobby</h2>
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color:white">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-			<h3 class="row justify-content-center" style="color:white">ルーム名: {{ room_name|safe }}</h4>
+        <div class="col-md-6 col-lg-5 col-xl-4">
+			<h4 class="row justify-content-center mb-5">ルーム名: {{ room_name|safe }}</h4>
             <div class="login-wrap p-0">
                 <form action="#" method="POST" class="signin-form" novalidate>
                     {% load widget_tweaks %}
@@ -40,24 +33,30 @@
                     {% endfor %}
                     {% for error in form.non_field_errors %}
                     {% if error %}
-                    <div class="alert alert-warning text-center" role="alert">
-                        <p>{{ error | linebreaksbr}}</p>
-                    </div>
+                    <p class="error" role="alert">{{ error | linebreaksbr}}</p>
                     {% endif %}
                     {% endfor %}
+                    {% if messages %}
+                    <ul role="alert">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                     <div class="form-group">
-                        <button type="submit" class="form-control btn btn-primary submit px-3">ルーム参加</button>
+                        <button type="submit" class="form-control btn btn-primary submit">ルーム参加</button>
                     </div>
                 </form>
-				{% if user.is_authenticated %}
-                <div class="form-group d-md-flex">
-                    <div class="w-60 text-md-right">
-                        <form action='{% url "accounts:custom_logout" %}' method='GET' name='logout'>
-                            <button type="submit" class="btn submit px-3" style="color:white">ログアウト</button>
-                        </form>
-                    </div>
+                <div class="form-group d-flex justify-content-between">
+                    {% if user.is_authenticated %}
+                    <form action='{% url "accounts:custom_logout" %}' method='GET' name='logout'>
+                        <button type="submit" class="btn submit">ログアウト</button>
+                    </form>
+                    {% endif %}
+                    {% if room_qrcode %}
+                        <a href="{{ room_qrcode }}" target="_blank">QRコードを取得</a>
+                    {% endif %}
                 </div>
-				{% endif %}
             </div>
         </div>
     </div>
