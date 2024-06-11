@@ -6,6 +6,11 @@
 /src/qrchat/chat/assets/css/style-dev.css
 /src/qrchat/chat/assets/css/style2-dev.css
 
+/mysql
+/secret_keys/user_password.txt
+/secret_keys/root_password.txt
+/secret_keys/django_secret.txt
+
 /src/qrchat/accounts/__pycache__
 /src/qrchat/accounts/views/__pycache__
 /src/qrchat/chat/__pycache__

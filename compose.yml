@@ -1,0 +1,116 @@
+services:
+
+  django:
+    container_name: django
+    build:
+      context: ./containers
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    tty: true
+    volumes:
+      - ${SRC_PATH}:/root/workspace
+    environment:
+      - DEBUG=${DEBUG}
+    command: >
+      bash -c
+      "export SECRET_KEY=$(cat /run/secrets/django_secret) &&
+      export DB_USER_PASSWORD=$(cat /run/secrets/db_user_password) &&
+      cd qrchat &&
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+    secrets:
+      - django_secret
+      - db_user_password
+
+  
+  celery:
+    container_name: celery
+    build:
+      context: ./containers
+    tty: true
+    volumes:
+      - ${SRC_PATH}:/root/workspace
+    command: >
+      bash -c
+      "export SECRET_KEY=$(cat /run/secrets/django_secret) &&
+      cd qrchat &&
+      celery -A qrchat worker -l info"
+    depends_on:
+      - django
+      - redis
+      - db
+    secrets:
+      - django_secret
+
+  redis:
+      container_name: redis
+      image: redis:latest
+      restart: always
+      tty: true
+      ports:
+        - 6379:6379
+
+  monitor:
+      container_name: monitor
+      build:
+        context: ./containers
+      tty: true
+      volumes:
+        - ${SRC_PATH}:/root/workspace
+      ports:
+        - 5555:5555
+      command: >
+        bash -c
+        "export SECRET_KEY=$(cat /run/secrets/django_secret) &&
+        export DB_USER_PASSWORD=$(cat /run/secrets/db_user_password) &&
+        cd qrchat &&
+        celery -A qrchat flower --port=5555"
+      depends_on:
+        - django
+        - redis
+        - db
+      secrets:
+        - django_secret
+        - db_user_password
+
+  db:
+    container_name: db
+    image: mysql:8.4.0
+    restart: always
+    secrets:
+      - db_root_password
+      - db_user_password
+    environment:
+      - MYSQL_DATABASE=qrchat-db
+      - MYSQL_USER=qrchat
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_user_password
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    command: >
+      mysqld
+      --character-set-server=utf8
+      --collation-server=utf8_unicode_ci
+    healthcheck:
+      test: bash -c "mysqladmin ping -h localhost -u qrchat -p$(cat /run/secrets/db_user_password)"
+      interval: 6s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+
+secrets:
+  db_root_password:
+    file: ./secret_keys/root_password.txt
+  db_user_password:
+    file: ./secret_keys/user_password.txt
+  django_secret:
+    file: ./secret_keys/django_secret.txt

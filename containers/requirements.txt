@@ -13,3 +13,4 @@ flower==2.0.1
 qrcode==7.4.2
 pillow==10.3.0
 django-cleanup==8.1.0
+mysqlclient==2.2.4
