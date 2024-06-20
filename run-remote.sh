@@ -63,14 +63,14 @@ cd ../deploy
 kubectl apply -f frontend-config.yaml
 kubectl apply -f backend-config.yaml
 envsubst < managed-cert.yaml | kubectl apply -f -
-sleep 10
-
-service_name=$(yq e '.metadata.name' service.yaml)
-ingress_name=$(yq e '.metadata.name' managed-cert-ingress.yaml)
-deploy_name=$(yq e '.metadata.name' deployment.yaml.yaml)
-namespace="default"
+sleep 15
 
 set +e 
+service_name=$(yq -r '.metadata.name' service.yaml)
+ingress_name=$(yq -r '.metadata.name' managed-cert-ingress.yaml)
+deploy_name=$(yq -r '.metadata.name' deployment.yaml)
+namespace="default"
+
 if kubectl get service $service_name -n $namespace > /dev/null 2>&1; then
   kubectl delete -f service.yaml
 fi

@@ -116,6 +116,8 @@ chmod 0444 $secret_folder_path$user_password_fname
 chmod 0444 $secret_folder_path$django_secret_fname
 
 
+cd local_container
+
 if "${w_up}"; then
     docker compose up --build -d
 else

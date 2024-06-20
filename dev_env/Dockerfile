@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y gnupg software-properties-common apt-tr
 RUN export NONINTERACTIVE=1 && \
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-RUN brew install kubectl && kubectl version --client
+RUN brew install kubectl
 RUN brew tap hashicorp/tap && brew install hashicorp/tap/terraform
 RUN brew install helm
 
