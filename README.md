@@ -1,7 +1,10 @@
 ### ローカル実行
+※06/12 秘密鍵の保管場所を移動させたため、初回起動時に限りrun.shの実行が必要
 ```
-docker-compose up --build
+./run.sh --rootpw MYSQL_ROOT_PASSWORD --userpw MYSQL_USER_PASSWORD --djangosr SECRET_KEY(settings.py)
 ```
+手動で秘密鍵ファイルの追加を行う場合は、/secret_keys 配下にKEYを格納したテキストファイルを作成し、chmod 0444 で読み取り専用とする。
+
 
 ### PORT  
 django :8000  
