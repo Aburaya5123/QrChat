@@ -1,15 +1,3 @@
-### ローカル実行
-
-```
-./run-local.sh --rootpw [MYSQL_ROOT_PASSWORD] --userpw [MYSQL_USER_PASSWORD] --djangosr [SECRET_KEY(django)]
-```
-もしくは、```/local_container``` 配下で以下のコマンドを実行 ```docker compose up --build```。  
-事前に```/local_container/secret_keys``` 配下にKEYを格納したテキストファイルを用意する。  
-テキストファイル作成後は、```chmod 0444``` で読み取り専用にする。  
-#### PORT  
-django :8000  
-flower(Celeryのモニター) :5555  
-<br>
 ### リモート実行 (GCPにデプロイ)
 手順
 1. 事前準備としてGCPにプロジェクトを作成し、課金の請求先を設定する。
@@ -39,6 +27,20 @@ helmをつかえばもっと上手くできるみたい。
 インフラに関しても、とりあえず必要なものは全部詰め込んだので、放っておくとお財布が大変なことになる。  
 もっと効率よくできるように勉強しないと。  
 <br>
+
+### ローカル実行
+
+```
+./run-local.sh --rootpw [MYSQL_ROOT_PASSWORD] --userpw [MYSQL_USER_PASSWORD] --djangosr [SECRET_KEY(django)]
+```
+もしくは、```/local_container``` 配下で以下のコマンドを実行 ```docker compose up --build```。  
+事前に```/local_container/secret_keys``` 配下にKEYを格納したテキストファイルを用意する。  
+テキストファイル作成後は、```chmod 0444``` で読み取り専用にする。  
+#### PORT  
+django :8000  
+flower(Celeryのモニター) :5555  
+<br>
+
 
 
 
