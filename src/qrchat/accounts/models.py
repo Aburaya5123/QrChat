@@ -71,7 +71,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(verbose_name=_("ユーザー名"), default=None, unique=False, blank=True, null=True,
                         max_length=MAX_USERNAME_LENGTH)
     login_id = models.CharField(verbose_name=_("ログインID"), unique=True, blank=False, null=False,
-                        validators=[MinLengthValidator(6)], max_length=MAX_LOGIN_ID_LENGTH)
+                        validators=[MinLengthValidator(6)], max_length=100)
     last_login = models.DateTimeField(auto_now=True)
     joined_room = models.UUIDField(default=None, null=True)
     is_superuser = models.BooleanField(verbose_name=_('管理者'), default=False)

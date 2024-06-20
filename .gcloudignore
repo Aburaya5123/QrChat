@@ -1,0 +1,4 @@
+/src/qrchat/accounts/migrations
+/src/qrchat/chat/migrations
+/src/qrchat/media/qrcodes
+/src/qrchat/static

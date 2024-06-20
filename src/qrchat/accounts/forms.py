@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django import forms
 
-from .models import CustomUser
+from .models import CustomUser, MAX_LOGIN_ID_LENGTH
 from qrchat.utils.model_helper import create_customuser_object
 
 
@@ -39,12 +39,18 @@ class CustomUserCreationForm(UserCreationForm):
             #'min_length':_('確認用パスワードは6文字以上で入力してください。'),
         })
 
+    def clean_login_id(self):
+        login_id = self.cleaned_data["login_id"]
+        if len(login_id) > MAX_LOGIN_ID_LENGTH:
+            raise forms.ValidationError(
+                'ログインIDは30文字以内で入力してください。'
+            )
+        return login_id
+
     def clean(self):
         self.login_id = self.cleaned_data.get("login_id")
         self.password = self.cleaned_data.get("password1")
         self.password_confirm = self.cleaned_data.get("password2")
-        #if self.password!=self.password_confirm:
-           #self._update_errors({'password2':['入力されたパスワードが一致しません。']})
         super(CustomUserCreationForm, self).clean()
         return self.cleaned_data
     

@@ -14,7 +14,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def websocket_connect(self, message) -> None|NoReturn:
         self.user = self.scope['user']
-        #print(f"USER: {self.user} has Connected.") 
 
         if self.user.is_authenticated and type(self.user.joined_room) is UUID:
             await self.channel_layer.group_add(
@@ -47,11 +46,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if self.user.is_authenticated and type(self.user.joined_room) is UUID:
             text_data_json = json.loads(text_data)
+
             try:
                 message = text_data_json["message"]
+                if message == "":
+                    return
+
                 time_stamp = timezone.now()
                 # ChatMessageの作成
-                await self.create_chat_object(message, time_stamp)
+                await self.create_chat_object(
+                    self.user.username,
+                    self.user.joined_room,
+                    self.user.user_icon,
+                    message, 
+                    time_stamp)
                 await self.channel_layer.group_send(
                     str(self.user.joined_room),{
                         "type" : "chat_message",
@@ -116,12 +124,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # ChatMessageオブジェクト作成
     @database_sync_to_async
-    def create_chat_object(self, message:str, created_at:datetime) -> None:
-        create_room_messages(self.user.username, 
+    def create_chat_object(self, name:str, joined_room:UUID, user_icon:str, message:str, created_at:datetime) -> None:
+        create_room_messages(name, 
                              message, 
                              created_at, 
-                             self.user.joined_room,
-                             self.user.user_icon)
+                             joined_room,
+                             user_icon)
 
     # チャット履歴の送信
     async def on_first_connected(self) -> None:

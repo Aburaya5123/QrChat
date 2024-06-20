@@ -3,13 +3,11 @@ from django.core.validators import MinLengthValidator
 from django.utils.translation import gettext_lazy as _
 from uuid import uuid4
 from logging import getLogger
-from io import BytesIO
 from django.utils import timezone
 from datetime import timedelta
-from django.core.files import File
+import os
 
 from accounts.models import CustomUser, MAX_USERNAME_LENGTH
-from qrchat.qrcode_generator import generate_qrcode
 
 
 # ルーム名の最大文字数
@@ -36,7 +34,8 @@ class Room(models.Model):
     created_at = models.DateTimeField(auto_created=True) # ルーム作成日時
     expire_at = models.DateTimeField(null=True)    
     participants = models.ManyToManyField(to='accounts.CustomUser')
-    qrcode = models.ImageField(upload_to='qrcodes/', blank=True)
+    qrcode = models.CharField(verbose_name=_("QRCode"), unique=False, blank=True, null=True,
+                              max_length=200)
 
     # ルーム参加者の追加
     def add_member(self, user) -> None:
@@ -57,14 +56,16 @@ class Room(models.Model):
     def save(self, *args, **kwargs) -> None:
         # QRコードの作成
         from accounts.middleware import PathPattern
-        from qrchat.settings import CURRENT_DOMAIN_URL
+        from qrchat.settings import CURRENT_DOMAIN_NAME
 
-        room_url = CURRENT_DOMAIN_URL + PathPattern.path_pattern['lobby'] + str(self.room_id) 
-        img = generate_qrcode(room_url)
-        # PNGでMediaに保存
-        img_buffer = BytesIO()
-        img.save(img_buffer, format='PNG')
-        self.qrcode.save(f"room_qrcode_{self.room_id}.png", File(img_buffer), save=False)
+        room_url = CURRENT_DOMAIN_NAME + PathPattern.path_pattern['lobby'] + str(self.room_id)
+
+        if os.getenv("REMOTE_DEPLOY", False):
+            from qrchat.publish_messages import create_qrcode
+            self.qrcode = create_qrcode(room_url, self.room_id)
+        else:
+            from qrchat.qrcode_generator import generate_qrcode
+            self.qrcode = generate_qrcode(room_url, self.room_id)
 
         super().save(*args, **kwargs)
 
@@ -83,7 +84,7 @@ class RoomMessage(models.Model):
         related_name='roomid',
         on_delete=models.CASCADE # Roomオブジェクトと連動して削除
     )
-    name = models.CharField(max_length=MAX_USERNAME_LENGTH) # 発言者のユーザー名
+    name = models.CharField(unique=False, default=_("名無し"), max_length=MAX_USERNAME_LENGTH) # 発言者のユーザー名
     content = models.TextField() # 発言内容
     created_at = models.DateTimeField(auto_created=True) # 発言日時
     icon = models.CharField(unique=False, blank=False, null=False, max_length=10)

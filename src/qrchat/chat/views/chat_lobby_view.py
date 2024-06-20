@@ -50,7 +50,7 @@ class ChatLobby(FormView):
         context = {
             'room_name':room_name,
             'form':m_form,
-            'room_qrcode':room_object.first().qrcode.url
+            'room_qrcode':room_object.first().qrcode
         }
         return render(request, self.template_name, context)
     
@@ -89,6 +89,6 @@ class ChatLobby(FormView):
         if self.room_uuid is not None:
             room_object = find_room_object(True, room_id=self.room_uuid)
             if room_object is not None:
-                context['room_qrcode'] = room_object.first().qrcode.url
+                context['room_qrcode'] = room_object.first().qrcode
                 context['room_name'] = room_object.first().room
         return super().render_to_response(context, **response_kwargs)

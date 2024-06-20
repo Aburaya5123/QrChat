@@ -3,7 +3,7 @@ services:
   django:
     container_name: django
     build:
-      context: ./containers
+      context: ./
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -11,12 +11,13 @@ services:
     volumes:
       - ${SRC_PATH}:/root/workspace
     environment:
-      - DEBUG=${DEBUG}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
     command: >
       bash -c
       "export SECRET_KEY=$(cat /run/secrets/django_secret) &&
       export DB_USER_PASSWORD=$(cat /run/secrets/db_user_password) &&
       cd qrchat &&
+      python manage.py makemigrations accounts chat &&
       python manage.py migrate &&
       python manage.py collectstatic --noinput &&
       python manage.py runserver 0.0.0.0:8000"
@@ -28,18 +29,21 @@ services:
     secrets:
       - django_secret
       - db_user_password
-
   
   celery:
     container_name: celery
     build:
-      context: ./containers
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
     tty: true
     volumes:
       - ${SRC_PATH}:/root/workspace
     command: >
       bash -c
       "export SECRET_KEY=$(cat /run/secrets/django_secret) &&
+      export DB_USER_PASSWORD=$(cat /run/secrets/db_user_password) &&
       cd qrchat &&
       celery -A qrchat worker -l info"
     depends_on:
@@ -48,6 +52,7 @@ services:
       - db
     secrets:
       - django_secret
+      - db_user_password
 
   redis:
       container_name: redis
@@ -60,7 +65,8 @@ services:
   monitor:
       container_name: monitor
       build:
-        context: ./containers
+        context: ./
+        dockerfile: Dockerfile
       tty: true
       volumes:
         - ${SRC_PATH}:/root/workspace
@@ -102,10 +108,10 @@ services:
       --collation-server=utf8_unicode_ci
     healthcheck:
       test: bash -c "mysqladmin ping -h localhost -u qrchat -p$(cat /run/secrets/db_user_password)"
-      interval: 6s
-      timeout: 3s
-      retries: 6
-      start_period: 5s
+      interval: 7s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
 secrets:
   db_root_password:

@@ -15,15 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path, include
-from django.views.generic import RedirectView
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
+from .health_check import healthz
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('chat/', include('chat.urls')),
-    #re_path(r'.*', RedirectView.as_view(url='/accounts/login/')),
+    path('healthz', healthz, name='healthz'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

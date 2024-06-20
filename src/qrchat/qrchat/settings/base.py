@@ -15,34 +15,15 @@ import os
 from django.urls import reverse_lazy
 
 
-CURRENT_DOMAIN_URL = "https://localhost:8000"
 
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-
-# SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# Stored in .env
 
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DJANGO_DEBUG')
 
-
-# Don't set '*' in production env
-
-ALLOWED_HOSTS = ['*']
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -58,22 +39,6 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'channels',
     'django_cleanup.apps.CleanupConfig',
-]
-
-
-"""
-Note : Starting from version 4.0.0 of channels, ASGI runserver in development mode does not work anymore. 
-You will have to install daphne as well.
-"""
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.AccessControlMiddleware',
 ]
 
 
@@ -97,20 +62,8 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'qrchat.wsgi.application'
+#WSGI_APPLICATION = 'qrchat.wsgi.application'
 ASGI_APPLICATION = 'qrchat.asgi.application'
-
-
-# Channel-Redis(webSocket-backend)
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('redis', 6379)],
-        },
-    },
-}
 
 
 # Django-Redis(Celery-backend)
@@ -119,44 +72,11 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZZER = 'json'
 
-CELERY_BROKER_URL = "redis://redis:6379"
+
 CELERY_CACHE_BACKEND = "django-cache"
 CELERY_RESULT_EXTENDED = True
 CELERY_IMPORTS = ("qrchat.tasks", )
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379'
-    }
-}
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-""" sqlite3 version
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-"""
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'qrchat-db',
-        'USER': 'qrchat',
-        'PASSWORD': os.environ.get('DB_USER_PASSWORD'),
-        'HOST': 'db',
-        'PORT': '3306',
-    }
-}
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -171,9 +91,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'Asia/Tokyo'
@@ -183,12 +100,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'accounts/assets'),
@@ -197,11 +110,7 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

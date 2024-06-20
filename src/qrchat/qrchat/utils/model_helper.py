@@ -209,18 +209,19 @@ def get_historical_chat_messages(room_uuid:UUID) -> dict|None:
     if chats.count()==0:
         return None
     output={}
+    
+    sorted_chats = sorted(list(chats), key=lambda chat: chat.created_at)
     # 最大取得件数 = 50
-    if chats.count()>50:
-        chats = list(chats)[-50:]
+    if len(sorted_chats) > 50:
+        sorted_chats = sorted_chats[-50:]
+    counter = 0
 
-    for chat in chats:
-        output[str(chat.chat_id)] = {'name':chat.name, 
+    for chat in sorted_chats:
+        output[counter] = {'name':chat.name, 
                                      'content':chat.content, 
                                      'created_at':str(chat.created_at),
                                      'icon':chat.icon}
-    # 作成日時で昇順
-    sorted(output.items(), key=lambda value: value[1]['created_at'])
-
+        counter += 1
     return output
 
 """

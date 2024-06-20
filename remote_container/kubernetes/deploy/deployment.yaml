@@ -1,0 +1,149 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prod-app
+  template:
+    metadata:
+      labels:
+        app: prod-app
+    spec:
+      serviceAccountName: custom-service-account
+      containers:
+      - name: django
+        image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}-repository/django:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DJANGO_SECRET
+        - name: REDIS_HOST_IP
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: REDIS_HOST_IP
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_NAME
+        - name: DATABASE_USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_NAME
+        - name: DATABASE_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_PASSWORD                          
+        - name: STATIC_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: STATIC_BUCKET_NAME
+        - name: MEDIA_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: MEDIA_BUCKET_NAME
+        - name: PROJECT_ID
+          value: ${GCP_PROJECT_ID}
+        - name: DOMAIN_NAME
+          value: ${DNS_NAME}
+        - name: DJANGO_DEBUG
+          value: "${DJANGO_DEBUG_MODE}"          
+        - name: REMOTE_DEPLOY
+          value: "True"
+        command:
+        - "bash"
+        - "-c"
+        - |
+          cd qrchat &&
+          python manage.py makemigrations accounts chat &&
+          python manage.py migrate &&
+          python manage.py collectstatic --noinput &&
+          python manage.py runserver 0.0.0.0:8000
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 30
+
+      - name: celery
+        image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}-repository/django:latest
+        imagePullPolicy: Always
+        command:
+        - "bash"
+        - "-c"
+        - |
+          cd qrchat &&
+          celery -A qrchat worker -l info
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DJANGO_SECRET
+        - name: REDIS_HOST_IP
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: REDIS_HOST_IP
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_NAME
+        - name: DATABASE_USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_NAME
+        - name: DATABASE_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_PASSWORD                          
+        - name: STATIC_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: STATIC_BUCKET_NAME
+        - name: MEDIA_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: MEDIA_BUCKET_NAME
+        - name: PROJECT_ID
+          value: ${GCP_PROJECT_ID}
+        - name: DOMAIN_NAME
+          value: ${DNS_NAME}
+        - name: DJANGO_DEBUG
+          value: "${DJANGO_DEBUG_MODE}"            
+        - name: REMOTE_DEPLOY
+          value: "True"
+
+      initContainers:
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:latest
+        restartPolicy: Always
+        command:
+        - "/cloud_sql_proxy"
+        - "--dir=/cloudsql"
+        - "-instances=${GCP_PROJECT_ID}:${GCP_REGION}:${PROJECT_NAME}-database-instance=tcp:0.0.0.0:3306"
+        - "-term_timeout=30s"
+        securityContext:
+          runAsNonRoot: true

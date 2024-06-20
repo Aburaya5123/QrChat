@@ -48,8 +48,6 @@ def delete_expired_sessions() -> None:
         # ゲストアカウントの場合に限りモデルオブジェクト削除
         expired_guests = find_customuser_object(True, user_id=pks, is_guest=True)
         if expired_guests is not None:
-            #print(f"Delete Expired Guest Accounts. \
-            #      Total:{expired_guests.count()} TimeStamp:{timezone.now()}")
             expired_guests.delete()
     expired_session.delete()
 
@@ -67,6 +65,4 @@ def delete_expired_room() -> None:
     expired = find_expired_room()
     if expired is None:
         return
-    #print(f"Delete Expired Rooms. \
-    #    Total:{expired.count()} TimeStamp:{timezone.now()}")
     expired.delete()

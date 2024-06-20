@@ -3,13 +3,17 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
+import os
 
 from qrchat.utils.model_helper import *
 
 
 # チャット画面
 class ChatRoom(LoginRequiredMixin, TemplateView):
-    template_name = 'chat/chatroom.html'
+    if os.getenv("REMOTE_DEPLOY", False):
+        template_name = 'chat/chatroom_remote.html'
+    else:
+        template_name = 'chat/chatroom_local.html'
 
     def get(self, request, room_id):
         # URLからroom_idを取得
@@ -23,13 +27,8 @@ class ChatRoom(LoginRequiredMixin, TemplateView):
             messages.error(self.request, 'ルームが見つかりませんでした。')
             return redirect('accounts:custom_login')
         
-        # ルームオーナーのユーザー名を取得
-        owner_object = find_customuser_object(True, user_id=room_object.first().owner.user_id)
-        owner_name = owner_object.first().username if owner_object is not None else 'なし'
-        
         m_context = {
             'room_id':self.room_uuid,
             'room_name':room_object.first().room,
-            'room_owner':owner_name
         }
         return render(request, self.template_name, context=m_context)

@@ -14,3 +14,9 @@ qrcode==7.4.2
 pillow==10.3.0
 django-cleanup==8.1.0
 mysqlclient==2.2.4
+hiredis==2.3.2
+google-cloud-storage==2.17.0
+validators==0.28.3
+google-cloud-logging==3.10.0
+django-storages==1.14.3
+google-cloud-pubsub==2.21.4

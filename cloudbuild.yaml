@@ -1,0 +1,13 @@
+steps:
+- name: "gcr.io/cloud-builders/docker"
+  args:
+  - build
+  - -t
+  - ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}-repository/django:latest
+  - -f
+  - ./remote_container/Dockerfile
+  - .
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - push
+  - ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}-repository/django:latest

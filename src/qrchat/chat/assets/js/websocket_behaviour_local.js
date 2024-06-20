@@ -4,20 +4,36 @@ $(document).ready(function () {
   const url = 'ws://localhost:8000/ws/chat/';
   var ws = new WebSocket(url);
 
-  ws.onopen = () => updateOnlineStatus(true);
-  ws.onclose = () => updateOnlineStatus(false);
+  // Templateからusernameの取得
+  const username = unicodeToChar(document.getElementById('user-data').textContent.replace(/^"|"$/g, ''));
+
+  ws.onopen = () => on_open();
+  ws.onclose = () => on_close();
 
   // Chatを追加するHolder
   const messageHolder = document.querySelector('#chat-message-holder');
 
   // チャット送信ボタンが押された際のリスナー
   document.getElementById("send-chat-text").onclick = function sendMessage() {
+    const input = document.getElementById('chat-text-area').value;
+
+    if (input === "") {
+      return
+    }
     var sendData = {
-      message: document.getElementById('chat-text-area').value,
+      message: input,
     };
     ws.send(JSON.stringify(sendData));
     document.getElementById('chat-text-area').value = '';
   };
+
+  function on_open() {
+    updateOnlineStatus(true);
+  }
+
+  function on_close() {
+    updateOnlineStatus(false);
+  }
  
   // チャットオブジェクトの作成
   function createChatMessageElement(data) {
@@ -28,8 +44,6 @@ $(document).ready(function () {
     if (messageHolder.scrollHeight - (messageHolder.scrollTop + messageHolder.offsetHeight) <= 30){
       autoScroll = true;
     }
-    // Templateからusernameの取得
-    const username = unicodeToChar(document.getElementById('user-data').textContent.replace(/^"|"$/g, ''));
 
     // username === チャットの送信者 の場合は、チャットを画面右に表示させる(-> Templete2)
     if (data['name'].toString() === username) {
@@ -110,9 +124,9 @@ $(document).ready(function () {
 
     // チャット履歴の取得
     if (receiveData.message_type === 'history') {
-      for (const [key, value] of  Object.entries(receiveData.message)) {
-          createChatMessageElement(value);
-          messageHolder.scrollTop = messageHolder.scrollHeight;
+      for (let i = 0; i < Object.keys(receiveData.message).length; i++) {
+        createChatMessageElement(receiveData.message[i]);
+        messageHolder.scrollTop = messageHolder.scrollHeight;
       }
     }
     // 参加人数の取得 

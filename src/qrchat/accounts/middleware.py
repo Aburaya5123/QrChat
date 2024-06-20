@@ -23,16 +23,25 @@ class PathPattern:
                     'chatroom':'/chat/room/', 
                     'lobby':'/chat/lobby/',
                     'favicon':'/favicon.ico/',
-                    'media':'/media/' }
+                    'media':'/media/',
+                    'healthz':'/healthz' }
 
 
 class AccessControlMiddleware:
+
+    def process_response(self, request, response):
+        response['Cache-Control'] = 'no-store, no-cache'
+        return response
 
     def __init__(self, get_response):
         self.get_response = get_response
         self.path_pattern = PathPattern.path_pattern
 
     def __call__(self, request):
+
+        # ヘルスチェック
+        if request.path.startswith(self.path_pattern['healthz']):
+            return self.get_response(request)
 
         destination = request.path
         destinations = destination.strip('/').split('/')

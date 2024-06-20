@@ -1,6 +1,6 @@
 #!/bin/bash
 
-secret_folder_path="./secret_keys/"
+secret_folder_path="./local_container/secret_keys/"
 root_password_fname="root_password.txt"
 user_password_fname="user_password.txt"
 django_secret_fname="django_secret.txt"
