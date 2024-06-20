@@ -17,6 +17,7 @@
 /remote_container/terraform/terraform.tfstate
 /remote_container/terraform/terraform.tfstate.backup
 /remote_container/terraform/terraform_test.tfvars
+/remote_container/terraform/terraform.tfvars
 
 /src/qrchat/media/qrcodes
 /src/qrchat/static

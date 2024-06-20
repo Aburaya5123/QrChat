@@ -1,5 +1,7 @@
-# Please rename the file to "terraform.tfvars" 
-#  and place it under "./terraform" directory for use.
+# 
+# If you want to run Terraform without using 'run-remote.sh',
+#   please rename the file to "terraform.tfvars" 
+#     and place it under "./remote_container/terraform" directory for use.
 #
 # ------------------------------------------------------------
 # CHANGE VALUES
@@ -7,7 +9,7 @@
 #
 # Do not use '_' for values
 
-project_name  = "your-service-name"
+project_name      = "your-service-name"
 gcp_project_id    = "your-project-id"
 gcp_region        = "your-region"
 
