@@ -19,5 +19,5 @@
 /remote_container/terraform/terraform_test.tfvars
 /remote_container/terraform/terraform.tfvars
 
-/src/qrchat/media/qrcodes
 /src/qrchat/static
+/src/qrchat/media/qrcodes
