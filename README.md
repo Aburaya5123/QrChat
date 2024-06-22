@@ -1,8 +1,11 @@
 ### 概要  
 
 Djangoで開発したWEBチャットアプリ。  
+誰でも匿名で参加できるチャットサービス。  
+https://www.qrchat.aburaya5123.com/  
+<br>
 ログイン画面でアカウントを新規作成するとチャットルームを開くことができ、同時にチャットルームのオーナーとなる。  
-ルーム作成時に一意なURLとQRコードが発行され、これを知るもののみがチャットに参加可能となる。  
+ルーム作成時に一意なURLとQRコードが発行され、これらを知る者のみチャットに参加可能となる。  
 オーナーと違い参加者はアカウント作成を行う必要はなく、ニックネームだけを設定すれば匿名で参加できる。  
 なので、不特定多数が集まる場で匿名で意見交換を行うツールとしての利用を想定している。  
 <br>
@@ -20,18 +23,17 @@ Iac: Terraform
 手順
 1. 事前準備としてGCPにプロジェクトを作成し、課金の請求先を設定する。
 2. ```/deployment-settings.tfvars``` にプロジェクトIDやリージョンを含めた情報を入力。
-3. 任意: ```/dev-env``` 配下で作成したコンテナに入る。(Cloud shellで実行する場合は不要、たぶん)
-4. 以下のコマンドでプロジェクトにログイン  
-  ```gcloud init && gcloud auth application-default login && gcloud auth application-default set-quota-project ${YOUR_PROJECT_ID}```
-5. ```./run-remote.sh```を実行
-6. デプロイ完了まで20分程度
-7. SecretManagerに格納されている 'STATIC_IP' を自身のドメインのaレコードに設定
-8. ```kubectl describe managedcertificate managed-cert```で、StatusがActiveになっていれば設定したドメインからHTTPSでアクセスできる。
+3. ```/dev-env``` 配下で作成したコンテナに入る。(Cloud shellで実行する場合は不要、たぶん)
+4. ```./run-remote.sh```を実行。
+5. デプロイ完了まで20分程度。
+6. ```kubectl get ingress``` コマンドで表示される 'managed-cert-ingress' のaddressを自身のドメインのaレコードに設定。
+7. ```kubectl describe managedcertificate managed-cert```のStatusがActiveかつ、dnsの設定が完了していればHTTPSでアクセス可能となる。
+8. 追記 06/22: Loadbalancerの外部IPへの直接アクセス, 国外からのアクセスをブロックするポリシーをCloudArmorで追加。
 <br>
 注意点として、kubectlでのオブジェクト作成は以下の順序で行う。
 
-External secret -><br>
-(frontend-conf, backend-conf, managed-cert) -><br>
+(External secret ->)<br>
+frontend-conf, backend-conf, managed-cert -><br>
 deployment.yaml -><br>
 service.yaml -><br>
 managed-cert-ingress.yaml<br>   
