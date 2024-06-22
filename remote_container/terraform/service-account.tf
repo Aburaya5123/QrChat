@@ -47,11 +47,11 @@ resource "google_project_iam_member" "csa_netadmin" {
   member        = "serviceAccount:${google_service_account.custom_service_account.email}"
 }
 
-#resource "google_project_iam_member" "csa_secadmin" {
-#  project       = var.gcp_project_id
-#  role          = "roles/compute.securityAdmin"
-#  member        = "serviceAccount:${google_service_account.custom_service_account.email}"
-#}
+resource "google_project_iam_member" "csa_secadmin" {
+  project       = var.gcp_project_id
+  role          = "roles/compute.securityAdmin"
+  member        = "serviceAccount:${google_service_account.custom_service_account.email}"
+}
 
 resource "google_project_iam_member" "csacf_storage_admin" {
   project       = var.gcp_project_id
