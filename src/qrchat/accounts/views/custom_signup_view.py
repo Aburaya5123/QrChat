@@ -19,7 +19,7 @@ class CustomSignUpView(CreateView):
         try:
             form.save()
         except Exception as e:
-            logger.warn(e)
+            logger.error(e)
             messages.error(self.request, 'アカウントの作成に失敗しました。')
             return redirect("accounts:custom_signup")
 

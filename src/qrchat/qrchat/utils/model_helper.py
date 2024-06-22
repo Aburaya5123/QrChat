@@ -93,7 +93,7 @@ def create_customuser_object(login_id:str,
     try:
         obj = CustomUser.objects.create_user(login_id=login_id, password=pw)
     except Exception as e:
-        logger.warn(e)
+        logger.error(e)
         return None
     return obj
 
@@ -101,7 +101,7 @@ def create_guestuser_object(username:str, room_uuid:UUID) -> CustomUser:
     try:
         obj = CustomUser.objects.create_guestuser(username = username, joined_room=room_uuid)
     except Exception as e:
-        logger.warn(e)
+        logger.error(e)
         return None
     return obj
 
@@ -120,7 +120,7 @@ def update_customuser_model(key_value_dict:dict[str,str],
         try:
             u_instance = CustomUser.objects.get(pk=u_pk)
         except CustomUser.DoesNotExist:
-            logger.warn(f"CustomUser<{u_pk}> Not Found.")
+            logger.error(f"CustomUser<{u_pk}> Not Found.")
             return False
 
     for key, value in key_value_dict.items():
@@ -175,7 +175,7 @@ def create_room_object(room_name:str,
             new_room.set_expire_date()
             new_room.save()
         except Exception as e:
-            logger.warn(e)
+            logger.error(e)
             return None
         if update_customuser_model({'joined_room':new_roomid}, u_instance=u_instance):
             return new_room
@@ -263,5 +263,5 @@ def channel_consumer_update(connected: bool,
         else:
             channel.remove_member(user)
     except Exception as e:
-        logger.warn(e)
+        logger.error(e)
     return channel.member_count

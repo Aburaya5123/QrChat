@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class = "content-section">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center mb-5">
+            <a href="{% url 'accounts:custom_login' %}" class="site-title">QrChat</a>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <img src="https://http.cat/images/403.jpg" alt="HTTP Cats" class="img-fluid" style="margin-top: 5px;">
+        <p class="mt-3 text-muted">
+            Image from <a href="https://httpcats.com/" target="_blank">HTTP Cats API</a> / Copyright (c) 2015 Rogério Vicente
+    </p>
+    </div>
+</section>
+{% endblock content %}

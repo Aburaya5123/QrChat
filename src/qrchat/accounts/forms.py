@@ -31,12 +31,10 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['password1'].error_messages.update({
             'required': _('パスワードを入力してください。'),
             'invalid': _('パスワードは6文字以上で入力してください。'),
-            #'min_length':_('パスワードは6文字以上で入力してください。')
         })
         self.fields['password2'].error_messages.update({
             'required': _('確認用パスワードを入力してください。'),
             'invalid': _('確認用パスワードは6文字以上で入力してください。'),
-            #'min_length':_('確認用パスワードは6文字以上で入力してください。'),
         })
 
     def clean_login_id(self):

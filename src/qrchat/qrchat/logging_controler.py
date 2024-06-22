@@ -1,9 +1,8 @@
 import logging
 import sys
-from google.cloud.logging.handlers import ContainerEngineHandler
+from google.cloud.logging_v2.handlers import StructuredLogHandler
 
 def cloud_logging_settings() -> None:
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(ContainerEngineHandler(stream=sys.stdout))
+    logger.addHandler(StructuredLogHandler(stream=sys.stdout))
     logger.propagate = False

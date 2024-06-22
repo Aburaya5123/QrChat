@@ -4,13 +4,12 @@ from validators import domain
 
 CURRENT_DOMAIN_NAME = f"https://{os.environ.get('DOMAIN_NAME')}"
 
+
 ALLOWED_HOSTS = ['*']
 
+
 CSRF_TRUSTED_ORIGINS = []
-
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME', "")
-
-
 if domain(DOMAIN_NAME):
     CSRF_TRUSTED_ORIGINS.append(f"https://{DOMAIN_NAME}")
 
@@ -42,6 +41,7 @@ CHANNEL_LAYERS = {
 CELERY_BROKER_URL = f"redis://{os.environ.get('REDIS_HOST_IP')}:6379/0"
 
 
+# cache
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
@@ -50,6 +50,7 @@ CACHES = {
 }
 
 
+# Cloud SQL(MYSQL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -62,6 +63,7 @@ DATABASES = {
 }
 
 
+# static/media storage
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
@@ -73,10 +75,8 @@ STORAGES = {
 
 GS_PROJECT_ID = os.environ.get("PROJECT_ID")
 GS_BUCKET_NAME = os.environ.get("STATIC_BUCKET_NAME")
-
 GS_QUERYSTRING_AUTH = False
 GS_OBJECT_PARAMETERS = {"cache_control" : "no-cache, max-age=0"}
-
 
 STATIC_ROOT = f"https://storage.googleapis.com/{os.environ.get('STATIC_BUCKET_NAME')}/"
 

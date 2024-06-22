@@ -16,8 +16,14 @@
 /remote_container/terraform/django-task.zip
 /remote_container/terraform/terraform.tfstate
 /remote_container/terraform/terraform.tfstate.backup
-/remote_container/terraform/terraform_test.tfvars
 /remote_container/terraform/terraform.tfvars
 
-/src/qrchat/media/qrcodes
+/remote_container/terraform_test/.terraform
+/remote_container/terraform_test/.terraform.lock.hcl
+/remote_container/terraform_test/django-task.zip
+/remote_container/terraform_test/terraform.tfstate
+/remote_container/terraform_test/terraform.tfstate.backup
+/remote_container/terraform_test/terraform.tfvars
+
 /src/qrchat/static
+/src/qrchat/media/qrcodes

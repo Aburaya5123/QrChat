@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+apt-get install google-cloud-sdk-gke-gcloud-auth-plugin --assume-yes
 
 while IFS="=" read -r key value; do
   [[ $key == \#* || -z $key || -z $value ]] && continue
@@ -21,25 +22,29 @@ done < ./deployment-settings.tfvars
 cp -f ./deployment-settings.tfvars ./remote_container/terraform/terraform.tfvars
 
 
-gcloud init
-
-apt-get install google-cloud-sdk-gke-gcloud-auth-plugin --assume-yes
-
-gcloud auth application-default login
-gcloud auth application-default set-quota-project ${GCP_PROJECT_ID}
-
-
 cd ./remote_container/terraform
 terraform init
 terraform plan
 terraform apply -auto-approve
-export REDIS_HOST_IP=$(terraform output -raw redis_ip_address)
-export STATIC_BUCKET_NAME=$(terraform output -raw static_bucket_name)
-export MEDIA_BUCKET_NAME=$(terraform output -raw media_bucket_name) 
+export STATIC_IP=$(terraform output -raw static_ip_address)
 
 
 gcloud container clusters get-credentials $PROJECT_NAME-container-cluster --zone $GCP_REGION --project $GCP_PROJECT_ID
 
+
+try() {
+  set +e
+  "$@"
+  local exit_status=$?
+  set -e
+  return $exit_status
+}
+catch() {
+  helm upgrade external-secrets external-secrets/external-secrets -n external-secrets
+}
+
+helm repo add external-secrets https://charts.external-secrets.io
+try helm install external-secrets external-secrets/external-secrets -n external-secrets --create-namespace || catch
 
 cd ../../
 tmpfile=$(mktemp)
@@ -48,7 +53,13 @@ gcloud builds submit --config "$tmpfile" .
 rm "$tmpfile"
 
 
-cd remote_container/kubernetes/deploy
+cd ./remote_container/kubernetes/external-secrets
+envsubst < cluster-secret-store.yaml | kubectl apply -f -
+sleep 5
+kubectl apply -f external-secret.yaml
+sleep 10
+
+cd ../deploy
 kubectl apply -f frontend-config.yaml
 kubectl apply -f backend-config.yaml
 envsubst < managed-cert.yaml | kubectl apply -f -

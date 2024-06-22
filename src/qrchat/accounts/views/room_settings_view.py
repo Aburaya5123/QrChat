@@ -56,6 +56,6 @@ class RoomSettingsView(LoginRequiredMixin, FormView):
             form.save()
             return redirect(f"/chat/lobby/{form.get_new_room_id()}/")
         except Exception as e:
-            logger.warn(e)
+            logger.error(e)
             messages.error(self.request, 'ルームの作成に失敗しました。')
             return redirect("accounts:room-settings")

@@ -5,5 +5,3 @@
    name: custom-backend-config
  spec:
    timeoutSec: 7200
-   securityPolicy:
-     name: "custom-policy"

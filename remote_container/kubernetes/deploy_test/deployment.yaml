@@ -24,19 +24,40 @@ spec:
           protocol: TCP
         env:
         - name: SECRET_KEY
-          value: ${DJANGO_SECRET_KEY}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DJANGO_SECRET
         - name: REDIS_HOST_IP
-          value: ${REDIS_HOST_IP}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: REDIS_HOST_IP
         - name: DATABASE_NAME
-          value: ${DB_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_NAME
         - name: DATABASE_USER_NAME
-          value: ${DB_USER_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_NAME
         - name: DATABASE_USER_PASSWORD
-          value: ${DB_USER_PASSWORD}                          
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_PASSWORD                          
         - name: STATIC_BUCKET_NAME
-          value: ${STATIC_BUCKET_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: STATIC_BUCKET_NAME
         - name: MEDIA_BUCKET_NAME
-          value: ${MEDIA_BUCKET_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: MEDIA_BUCKET_NAME
         - name: PROJECT_ID
           value: ${GCP_PROJECT_ID}
         - name: DOMAIN_NAME
@@ -72,25 +93,46 @@ spec:
           celery -A qrchat worker -l info
         env:
         - name: SECRET_KEY
-          value: ${DJANGO_SECRET_KEY}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DJANGO_SECRET
         - name: REDIS_HOST_IP
-          value: ${REDIS_HOST_IP}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: REDIS_HOST_IP
         - name: DATABASE_NAME
-          value: ${DB_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_NAME
         - name: DATABASE_USER_NAME
-          value: ${DB_USER_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_NAME
         - name: DATABASE_USER_PASSWORD
-          value: ${DB_USER_PASSWORD}                          
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: DATABASE_USER_PASSWORD                          
         - name: STATIC_BUCKET_NAME
-          value: ${STATIC_BUCKET_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: STATIC_BUCKET_NAME
         - name: MEDIA_BUCKET_NAME
-          value: ${MEDIA_BUCKET_NAME}
+          valueFrom:
+            secretKeyRef:
+              name: django-config
+              key: MEDIA_BUCKET_NAME
         - name: PROJECT_ID
           value: ${GCP_PROJECT_ID}
         - name: DOMAIN_NAME
           value: ${DNS_NAME}
         - name: DJANGO_DEBUG
-          value: "${DJANGO_DEBUG_MODE}"          
+          value: "${DJANGO_DEBUG_MODE}"            
         - name: REMOTE_DEPLOY
           value: "True"
 

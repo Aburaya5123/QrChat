@@ -1,3 +1,5 @@
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam
 
 resource "google_service_account" "custom_service_account" {
   account_id    = "custom-service-account"
@@ -11,9 +13,9 @@ resource "google_service_account" "custom_service_account_cf" {
   description   = "Used for cloud function"
 }
 
-resource "google_project_iam_member" "csa_sql_admin" {
+resource "google_project_iam_member" "csa_sql_client" {
   project       = var.gcp_project_id
-  role          = "roles/cloudsql.admin"
+  role          = "roles/cloudsql.client"
   member        = "serviceAccount:${google_service_account.custom_service_account.email}"
 }
 
@@ -41,18 +43,6 @@ resource "google_project_iam_member" "csa_publisher" {
   member        = "serviceAccount:${google_service_account.custom_service_account.email}"
 }
 
-resource "google_project_iam_member" "csa_netadmin" {
-  project       = var.gcp_project_id
-  role          = "roles/compute.networkAdmin"
-  member        = "serviceAccount:${google_service_account.custom_service_account.email}"
-}
-
-#resource "google_project_iam_member" "csa_secadmin" {
-#  project       = var.gcp_project_id
-#  role          = "roles/compute.securityAdmin"
-#  member        = "serviceAccount:${google_service_account.custom_service_account.email}"
-#}
-
 resource "google_project_iam_member" "csacf_storage_admin" {
   project       = var.gcp_project_id
   role          = "roles/storage.admin"
@@ -64,6 +54,7 @@ resource "google_project_iam_member" "csacf_token_creator" {
   role          = "roles/iam.serviceAccountTokenCreator"
   member        = "serviceAccount:${google_service_account.custom_service_account_cf.email}"
 }
+
 
 
 module "workload_identity_for_cluster" {
@@ -78,5 +69,7 @@ module "workload_identity_for_cluster" {
   namespace           = "default"
   project_id          = var.gcp_project_id
 
-  depends_on = [google_container_cluster.project_container_cluster]
+  roles               = ["roles/compute.securityAdmin"]
+
+  depends_on = [google_container_node_pool.project_node_pool]
 }

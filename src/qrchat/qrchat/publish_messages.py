@@ -23,7 +23,7 @@ def create_qrcode(url:str, room_uuid:UUID) -> str|None:
 
         return os.path.join(MEDIA_ROOT, f"{room_uuid}.png")
     except Exception as e:
-        logger.warn(e)
+        logger.error(e)
         return None
     
 
@@ -39,4 +39,4 @@ def delete_qrcode(room_uuid:UUID) -> None:
         data = message.encode("utf-8")
         future = publisher.publish(topic_path, data)
     except Exception as e:
-        logger.warn(e)
+        logger.error(e)

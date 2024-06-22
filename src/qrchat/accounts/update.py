@@ -28,7 +28,7 @@ def delete_expired_sessions() -> None:
     try:
         expired_session = Session.objects.filter(expire_date__lt=timezone.now())
     except Exception as e:
-        logger.warn(e)
+        logger.error(e)
     if expired_session.count() == 0:
         return
     # セッション有効期限が過ぎているユーザーID(str)を格納
