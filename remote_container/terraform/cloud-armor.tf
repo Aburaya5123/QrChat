@@ -7,7 +7,17 @@ resource "google_compute_security_policy" "policy" {
     priority = "100"
     match {
         expr {
-          expression = "origin.region_code != 'JP' || ! request.path.contains('${var.dns_name}')"
+          expression = "!request.headers['Host'].matches('.*${var.dns_name}.*') && !request.headers[':authority'].matches('.*${var.dns_name}.com.*')"
+        }
+    }
+  }
+
+  rule {
+    action   = "deny(403)"
+    priority = "101"
+    match {
+        expr {
+          expression = "!'[JP,ZZ]'.contains(origin.region_code)"
         }
     }
   }
