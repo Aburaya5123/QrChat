@@ -21,7 +21,7 @@ Iac: Terraform
 
 ### リモート実行 (GCPにデプロイ)
 手順
-1. 事前準備としてGCPにプロジェクトを作成し、課金の請求先を設定する。
+1. 事前準備としてGCPにプロジェクトを作成し、課金の請求先を設定する。<br>※以下のapiを有効化する https://cloud.google.com/service-usage/docs/reference/rest?hl=ja <br>
 2. ```/deployment-settings.tfvars``` にプロジェクトIDやリージョンを含めた情報を入力。
 3. ```/dev-env``` 配下で作成したコンテナに入る。(Cloud shellで実行する場合は不要、たぶん)
 4. ```./run-remote.sh```を実行。
