@@ -10,7 +10,7 @@ from qrchat.utils.model_helper import *
 
 # チャット画面
 class ChatRoom(LoginRequiredMixin, TemplateView):
-    if os.getenv("REMOTE_DEPLOY", False):
+    if os.environ.get("REMOTE_DEPLOY", False):
         template_name = 'chat/chatroom_remote.html'
     else:
         template_name = 'chat/chatroom_local.html'

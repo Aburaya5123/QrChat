@@ -78,5 +78,5 @@ module "workload_identity_for_cluster" {
   namespace           = "default"
   project_id          = var.gcp_project_id
 
-  depends_on = [google_container_cluster.project_container_cluster]
+  depends_on = [google_container_cluster.project_container_cluster, google_service_account.custom_service_account]
 }

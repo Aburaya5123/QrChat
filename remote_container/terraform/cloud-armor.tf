@@ -1,5 +1,6 @@
 
 resource "google_compute_security_policy" "policy" {
+  project = module.project_services.project_id
   name = "custom-policy"
 
   rule {
@@ -7,7 +8,7 @@ resource "google_compute_security_policy" "policy" {
     priority = "100"
     match {
         expr {
-          expression = "!request.headers['Host'].matches('.*${var.dns_name}.*') && !request.headers[':authority'].matches('.*${var.dns_name}.com.*')"
+          expression = "!request.headers['Host'].matches('.*${var.dns_name}.*') && !request.headers[':authority'].matches('.*${var.dns_name}.*')"
         }
     }
   }

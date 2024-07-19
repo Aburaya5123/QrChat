@@ -26,7 +26,7 @@ def send_closure_signal(room_id:UUID) -> None:
     })
 
 def delete_qrcode(room_uuid:UUID) -> None:
-    if os.getenv("REMOTE_DEPLOY", False):
+    if os.environ.get("REMOTE_DEPLOY", False):
         from .publish_messages import delete_qrcode
         delete_qrcode(room_uuid)
     else:

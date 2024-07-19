@@ -28,6 +28,12 @@ sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin --assume-yes
 gcloud auth application-default login
 gcloud auth application-default set-quota-project ${GCP_PROJECT_ID}
 
+terraform_version=$(terraform -version | head -1 | awk '{print $2}')
+if [[ "$terraform_version" < "v1.9.2" ]]; then
+        wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        sudo apt update && sudo apt install terraform
+fi
 
 cd ./remote_container/terraform
 terraform init

@@ -60,7 +60,7 @@ class Room(models.Model):
 
         room_url = CURRENT_DOMAIN_NAME + PathPattern.path_pattern['lobby'] + str(self.room_id)
 
-        if os.getenv("REMOTE_DEPLOY", False):
+        if os.environ.get("REMOTE_DEPLOY", False):
             from qrchat.publish_messages import create_qrcode
             self.qrcode = create_qrcode(room_url, self.room_id)
         else:
