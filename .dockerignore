@@ -27,3 +27,5 @@
 
 /src/qrchat/static
 /src/qrchat/media/qrcodes
+
+/remote_container/kubernetes/deploy/test-remote.sh

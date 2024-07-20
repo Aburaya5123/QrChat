@@ -23,7 +23,11 @@ cp -f ./deployment-settings.tfvars ./remote_container/terraform/terraform.tfvars
 
 gcloud init
 
-sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin --assume-yes
+if which sudo > /dev/null; then
+  sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin --assume-yes
+else 
+  apt-get install google-cloud-sdk-gke-gcloud-auth-plugin --assume-yes
+fi
 
 gcloud auth application-default login
 gcloud auth application-default set-quota-project ${GCP_PROJECT_ID}

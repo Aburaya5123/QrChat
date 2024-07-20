@@ -34,6 +34,7 @@ resource "google_storage_bucket_iam_binding" "media_bucket_public_rule" {
   members = [
     "allUsers",
   ]
+  depends_on = [module.project_services]
 }
 
 resource "google_storage_bucket_iam_binding" "static_bucket_public_rule" {
@@ -42,6 +43,7 @@ resource "google_storage_bucket_iam_binding" "static_bucket_public_rule" {
   members = [
     "allUsers",
   ]
+  depends_on = [module.project_services]
 }
 
 resource "google_storage_bucket_iam_binding" "private_bucket_rule" {
@@ -50,6 +52,7 @@ resource "google_storage_bucket_iam_binding" "private_bucket_rule" {
   members = [
     "serviceAccount:${google_service_account.custom_service_account_cf.email}"
   ]
+  depends_on = [module.project_services]
 }
 
 resource "google_storage_bucket_object" "cloud_function_source_archive" {
